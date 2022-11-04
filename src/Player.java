@@ -41,7 +41,8 @@ public class Player extends GameObject {
 
     @Override
     public void fixedUpdate() {
-        handleInput();
+        if (!is_puppet)
+            handleInput();
 
         // Update shoot_cooldown
         shoot_cooldown -= 1;

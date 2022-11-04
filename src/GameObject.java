@@ -12,6 +12,8 @@ public class GameObject {
     public Image image;
     public World world;
 
+    public boolean is_puppet = false;
+
     public GameObject(World world, double pos_x, double pos_y, String image_path) {
         this.pos_x = pos_x;
         this.pos_y = pos_y;
