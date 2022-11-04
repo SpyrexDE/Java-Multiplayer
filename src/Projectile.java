@@ -1,24 +1,24 @@
 public class Projectile extends GameObject {
-    public float vel_x;
-    public float vel_y;
+    public double vel_x;
+    public double vel_y;
     public float speed = 1.0f;
     public float life_time = 0.0f;
     public float max_life_time = 1.0f;
 
-    public Projectile(float pos_x, float pos_y, String image_path, float vel_x, float vel_y) {
-        super(pos_x, pos_y, image_path);
+    public Projectile(World world, double pos_x, double pos_y, String image_path, double vel_x, double vel_y) {
+        super(world, pos_x, pos_y, image_path);
         this.vel_x = vel_x;
         this.vel_y = vel_y;
     }
 
-    public void update() {
-        life_time += 0.016f;
-        if (life_time > max_life_time) {
-            // die GameWindow.currentCanvas.gameObjects.remove(this);
-        }
-    }
-
     public void fixedUpdate() {
+        // Life time
+        life_time += 0.01f;
+        if (life_time > max_life_time) {
+            // Remove this projectile from the world without crashing
+            world.queue_remove(this);
+        }
+
         // Update position
         pos_x += vel_x;
         pos_y += vel_y;

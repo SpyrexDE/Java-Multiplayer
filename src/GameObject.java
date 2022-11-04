@@ -1,17 +1,18 @@
 import java.awt.Image;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 
 import javax.swing.ImageIcon;
 
 public class GameObject {
-    public float pos_x;
-    public float pos_y;
+    public double pos_x;
+    public double pos_y;
     public int width;
     public int height;
     public double rotation = 0d;
     public Image image;
+    public World world;
 
-    public GameObject(float pos_x, float pos_y, String image_path) {
+    public GameObject(World world, double pos_x, double pos_y, String image_path) {
         this.pos_x = pos_x;
         this.pos_y = pos_y;
 
@@ -20,6 +21,9 @@ public class GameObject {
 
         this.width = image.getWidth(GameWindow.currentCanvas);
         this.height = image.getHeight(GameWindow.currentCanvas);
+
+        this.world = world;
+        world.queue_add(this);
     }
 
     public void update() {}
