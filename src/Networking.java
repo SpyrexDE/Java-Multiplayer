@@ -1,26 +1,30 @@
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Networking {
     
-	public static final String PORT = "12346";
+	public static final int PORT = 12346;
     public static boolean is_master = false;
 
     public static Client client;
     public static Server server;
 
     public static void startServer() {
-        server = new Server(Integer.parseInt(PORT));
+        server = new Server(PORT);
+        new Thread(server).start();
     }
 
     public static void startClient(String ip) {
-        client = new Client(ip, Integer.parseInt(PORT));
+        client = new Client(ip, PORT);
     }
 
-    // Class for handling the connection to the server
     public static class Client {
         private Socket socket;
         private DataInputStream in;
@@ -64,51 +68,90 @@ public class Networking {
         }
     }
 
-    // Class for handling the connection to the client without blocking the main thread
-    public static class Server {
-        private ServerSocket serverSocket;
-        private Socket socket;
-        private DataInputStream in;
-        private DataOutputStream out;
+    public static class Server implements Runnable {
 
-        public Server(int port) {
+        protected int          serverPort;
+        protected ServerSocket serverSocket = null;
+        protected boolean      isStopped    = false;
+        protected Thread       runningThread= null;
+    
+        public static Socket socket;
+
+        public Server(int port){
+            this.serverPort = PORT;
+        }
+    
+        public void run(){
+            synchronized(this){
+                this.runningThread = Thread.currentThread();
+            }
+            openServerSocket();
+            while(! isStopped()){
+                socket = null;
+                try {
+                    System.out.println("Waiting for client to connect...");
+                    socket = this.serverSocket.accept();
+                    System.out.println("Client connected!");
+                } catch (IOException e) {
+                    if(isStopped()) {
+                        System.out.println("Server Stopped.");
+                        return;
+                    }
+                    throw new RuntimeException(
+                        "Error accepting client connection", e);
+                }
+            }
+            System.out.println("Server Stopped.") ;
+        }
+    
+
+        public String receive() {
+            if(socket == null) return null;
             try {
-                serverSocket = new ServerSocket(port);
-                socket = serverSocket.accept();
-                in = new DataInputStream(socket.getInputStream());
-                out = new DataOutputStream(socket.getOutputStream());
+                InputStream input = socket.getInputStream();
+                DataInputStream dataInput = new DataInputStream(input);
+                String msg = dataInput.readUTF();
+                return msg;
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            return "";
         }
 
         public void send(String msg) {
             try {
-                out.writeUTF(msg);
+                OutputStream output = socket.getOutputStream();
+                DataOutputStream dataOutput = new DataOutputStream(output);
+                dataOutput.writeUTF(msg);
+                dataOutput.flush();
+                dataOutput.close();
+                System.out.println("Sentmessage: " + msg);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-
-        public String receive() {
+    
+        private synchronized boolean isStopped() {
+            return this.isStopped;
+        }
+    
+        public synchronized void stop(){
+            this.isStopped = true;
             try {
-                return in.readUTF();
+                this.serverSocket.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new RuntimeException("Error closing server", e);
             }
-            return null;
         }
-
-        public void close() {
+    
+        private void openServerSocket() {
             try {
-                in.close();
-                out.close();
-                socket.close();
-                serverSocket.close();
+                this.serverSocket = new ServerSocket(this.serverPort);
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new RuntimeException("Cannot open port " + PORT, e);
             }
         }
+    
     }
 
     public static String getOwnIP() {

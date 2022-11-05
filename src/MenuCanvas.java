@@ -1,3 +1,4 @@
+
 import java.awt.*;
 import java.awt.event.*;
 import java.net.DatagramSocket;
@@ -13,7 +14,7 @@ import javax.swing.*;
 /**
  * @author Fabian Ke�ler
  */
-public class MenuCanvas extends JPanel {
+public class MenuCanvas extends Canvas {
     public MenuCanvas() {
 		initComponents();
 
@@ -21,12 +22,13 @@ public class MenuCanvas extends JPanel {
 	}
 
 	private void joinClicked(ActionEvent e) {
-        System.out.println(textFieldJoinIP.getText());
+        Networking.startClient(textFieldHostIP.getText());
+        GameWindow.window.switchCanvas(new GameCanvas());
 	}
 
 	private void hostClicked(ActionEvent e) {
         Networking.startServer();
-        GameWindow.gameWindow.loadGame();
+        GameWindow.window.switchCanvas(new GameCanvas());
 	}
 
 	private void initComponents() {

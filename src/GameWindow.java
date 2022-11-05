@@ -4,31 +4,29 @@ import javax.swing.JFrame;
 public class GameWindow extends JFrame {
 
     public static Canvas currentCanvas;
-    public static MenuCanvas menuCanvas;
-    public static GameWindow gameWindow;
+    public static GameWindow window;
 
     public GameWindow() {
         initUI();
-        gameWindow = this;
+        window = this;
     }
     
     private void initUI() {
 
-        menuCanvas = new MenuCanvas();
-
-        add(menuCanvas);
+        switchCanvas(new MenuCanvas());
                
         setResizable(false);
-        pack();
-        
         setTitle("Multiplayer Game");
-        setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
-    public void loadGame() {
-        remove(menuCanvas);
-        currentCanvas = new Canvas();
+    public void switchCanvas(Canvas canvas) {
+        if(currentCanvas != null)
+            remove(currentCanvas);
+        currentCanvas = canvas;
         add(currentCanvas);
+        pack();
+        currentCanvas.requestFocus();
+        setLocationRelativeTo(null);
     }
 }
