@@ -22,7 +22,7 @@ public class MenuCanvas extends Canvas {
 	}
 
 	private void joinClicked(ActionEvent e) {
-        Networking.startClient(textFieldHostIP.getText());
+        Networking.startClient(textFieldJoinIP.getText());
         GameWindow.window.switchCanvas(new GameCanvas());
 	}
 
