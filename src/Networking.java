@@ -3,8 +3,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -12,12 +10,13 @@ import java.util.ArrayList;
 public class Networking {
     
 	public static final int PORT = 12346;
-    public static boolean is_master = false;
+    public static boolean is_host = false;
 
     public static Client client;
     public static Server server;
 
     public static void startServer() {
+        is_host = true;
         server = new Server(PORT);
         new Thread(server).start();
     }
@@ -123,6 +122,9 @@ public class Networking {
                     InputStream in = sockets.get(i).getInputStream();
                     DataInputStream dis = new DataInputStream(in);
                     messages.add(dis.readUTF());
+
+                    // Forward data to other clients (Broadcast)
+                    send(dis.readUTF());
                 }
                 return messages;
             } catch (IOException e) {

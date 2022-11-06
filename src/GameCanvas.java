@@ -19,6 +19,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+import utils.Vector2D;
+
 public class GameCanvas extends Canvas implements ActionListener {
     private boolean inGame = true;
 
@@ -35,7 +37,7 @@ public class GameCanvas extends Canvas implements ActionListener {
         setPreferredSize(new Dimension(W_WIDTH, W_HEIGHT));
         addEventListeners();
         InputHandler.init(this);
-        initGame();     
+        initGame();
     }
 
     private void addEventListeners() {
@@ -54,8 +56,6 @@ public class GameCanvas extends Canvas implements ActionListener {
     private void initGame() {
     
         world = new World();
-        new Player(world, 100, 100, "src/resources/player.png");
-
         inGame = true;
     
     }
@@ -78,7 +78,7 @@ public class GameCanvas extends Canvas implements ActionListener {
             // Draw all game objects of the world
             for (GameObject go : world.gameObjects) {
                 Image image = rotate(go.image, go.rotation);
-                g.drawImage(image, (int) Math.round(go.pos_x), (int) Math.round(go.pos_y), this);
+                g.drawImage(image, (int) Math.round(go.position.x), (int) Math.round(go.position.y), this);
             }
 
             Toolkit.getDefaultToolkit().sync();

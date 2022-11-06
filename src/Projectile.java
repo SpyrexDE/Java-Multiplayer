@@ -1,14 +1,13 @@
+import utils.Vector2D;
+
 public class Projectile extends GameObject {
-    public double vel_x;
-    public double vel_y;
     public float speed = 1.0f;
     public float life_time = 0.0f;
     public float max_life_time = 1.0f;
 
-    public Projectile(World world, double pos_x, double pos_y, String image_path, double vel_x, double vel_y) {
-        super(world, pos_x, pos_y, image_path);
-        this.vel_x = vel_x;
-        this.vel_y = vel_y;
+    public Projectile(World world, Vector2D position, String image_path, Vector2D velocity) {
+        super(world, position, image_path);
+        this.velocity = velocity;
     }
 
     public void fixedUpdate() {
@@ -20,31 +19,31 @@ public class Projectile extends GameObject {
         }
 
         // Update position
-        pos_x += vel_x;
-        pos_y += vel_y;
+        position.x += velocity.x;
+        position.y += velocity.y;
 
         // Rotate image to velocity direction:
-        double angle = Math.atan2(vel_y, vel_x);
+        double angle = Math.atan2(velocity.y, velocity.x);
         angle = Math.toDegrees(angle);
         rotation = angle;
 
 
         // Make the projectile collide with the walls and bounce off:
-        if (pos_x < 0) {
-            pos_x = 0;
-            vel_x *= -1;
+        if (position.x < 0) {
+            position.x = 0;
+            velocity.x *= -1;
         }
-        if (pos_x > GameWindow.currentCanvas.W_WIDTH - image.getWidth(null)) {
-            pos_x = GameWindow.currentCanvas.W_WIDTH - image.getWidth(null);
-            vel_x *= -1;
+        if (position.x > GameWindow.currentCanvas.W_WIDTH - image.getWidth(null)) {
+            position.x = GameWindow.currentCanvas.W_WIDTH - image.getWidth(null);
+            velocity.x *= -1;
         }
-        if (pos_y < 0) {
-            pos_y = 0;
-            vel_y *= -1;
+        if (position.y < 0) {
+            position.y = 0;
+            velocity.y *= -1;
         }
-        if (pos_y > GameWindow.currentCanvas.W_HEIGHT - image.getHeight(null)) {
-            pos_y = GameWindow.currentCanvas.W_HEIGHT - image.getHeight(null);
-            vel_y *= -1;
+        if (position.y > GameWindow.currentCanvas.W_HEIGHT - image.getHeight(null)) {
+            position.y = GameWindow.currentCanvas.W_HEIGHT - image.getHeight(null);
+            velocity.y *= -1;
         }
     }
 }
