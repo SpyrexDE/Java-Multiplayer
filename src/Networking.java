@@ -7,6 +7,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class Networking {
     
@@ -23,9 +24,10 @@ public class Networking {
 
     public static void startClient(String ip) {
         client = new Client(ip, PORT);
+        new Thread(client).start();
     }
 
-    public static class Client {
+    public static class Client implements Runnable{
         private Socket socket;
         private DataInputStream in;
         private DataOutputStream out;
@@ -40,6 +42,15 @@ public class Networking {
             }
         }
 
+        public void run() {
+            while (true) {
+                String msg = receive();
+                if (msg != null) {
+                    // Process new data from server
+                }
+            }
+        }
+
         public void send(String msg) {
             try {
                 out.writeUTF(msg);
@@ -50,7 +61,8 @@ public class Networking {
 
         public String receive() {
             try {
-                return in.readUTF();
+                if (in.available() > 0)
+                    return in.readUTF();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -75,7 +87,7 @@ public class Networking {
         protected boolean      isStopped    = false;
         protected Thread       runningThread= null;
     
-        public static Socket socket;
+        public ArrayList<Socket> sockets = new ArrayList<Socket>();
 
         public Server(int port){
             this.serverPort = PORT;
@@ -87,10 +99,9 @@ public class Networking {
             }
             openServerSocket();
             while(! isStopped()){
-                socket = null;
                 try {
                     System.out.println("Waiting for client to connect...");
-                    socket = this.serverSocket.accept();
+                    sockets.add(this.serverSocket.accept());
                     System.out.println("Client connected!");
                 } catch (IOException e) {
                     if(isStopped()) {
@@ -105,27 +116,30 @@ public class Networking {
         }
     
 
-        public String receive() {
-            if(socket == null) return null;
+        public ArrayList<String> receive() {
             try {
-                InputStream input = socket.getInputStream();
-                DataInputStream dataInput = new DataInputStream(input);
-                String msg = dataInput.readUTF();
-                return msg;
+                ArrayList<String> messages = new ArrayList<String>();
+                for(int i = 0; i < sockets.size(); i++) {
+                    InputStream in = sockets.get(i).getInputStream();
+                    DataInputStream dis = new DataInputStream(in);
+                    messages.add(dis.readUTF());
+                }
+                return messages;
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            return "";
+            return null;
         }
 
         public void send(String msg) {
             try {
-                OutputStream output = socket.getOutputStream();
-                DataOutputStream dataOutput = new DataOutputStream(output);
-                dataOutput.writeUTF(msg);
-                dataOutput.flush();
-                dataOutput.close();
-                System.out.println("Sentmessage: " + msg);
+                for(int i = 0; i < sockets.size(); i++) {
+                    OutputStream output = sockets.get(i).getOutputStream();
+                    DataOutputStream dataOutput = new DataOutputStream(output);
+                    dataOutput.writeUTF(msg);
+                    dataOutput.flush();
+                    dataOutput.close();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

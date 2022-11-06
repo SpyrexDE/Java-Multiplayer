@@ -22,12 +22,6 @@ public class World {
     }
 
     public void update() {
-        if (Networking.server != null) {
-            String r = Networking.server.receive();
-            if (r != null)
-                System.out.println(Networking.server.receive());
-        }
-
         for (GameObject go : gameObjects) {
             go.update();
         }
