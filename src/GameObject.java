@@ -46,7 +46,6 @@ public class GameObject {
     public void fixedUpdate() {}
 
     public String packSyncData() {
-        System.out.println(position.toString());
         String data = "";
         for (Field field : syncedFields) {
             try {

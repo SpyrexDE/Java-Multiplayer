@@ -24,7 +24,7 @@ public class World {
     public static void queue_add(GameObject go) {
         if(gameObjectsToRemove.contains(go))
             gameObjectsToRemove.remove(go);
-        
+
         go.id = gameObjects.size();
         gameObjectsToAdd.add(go);
     }
