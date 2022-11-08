@@ -69,7 +69,7 @@ public class GameCanvas extends Canvas implements ActionListener {
             // Draw all game objects of the world
             for (GameObject go : world.gameObjects) {
                 Image image = rotate(go.image, go.rotation);
-                g.drawImage(image, (int) Math.round(go.position.x), (int) Math.round(go.position.y), this);
+                g.drawImage(image, (int) Math.round(go.pos_x), (int) Math.round(go.pos_y), this);
             }
 
             Toolkit.getDefaultToolkit().sync();

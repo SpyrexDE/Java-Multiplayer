@@ -9,8 +9,12 @@ import utils.Vector2D;
 public class GameObject {
     public int id;
 
-    public Vector2D position = new Vector2D(0, 0);
-    public Vector2D velocity = new Vector2D(0, 0);
+    public double pos_x;
+    public double pos_y;
+
+    public double vel_x;
+    public double vel_y;
+
     public int width;
     public int height;
     public double rotation = 0d;
@@ -20,8 +24,10 @@ public class GameObject {
     public boolean is_puppet = false;
     public ArrayList<Field> syncedFields = new ArrayList<Field>() {{
         try {
-            add(GameObject.class.getField("position"));
-            add(GameObject.class.getField("velocity"));
+            add(GameObject.class.getField("vel_x"));
+            add(GameObject.class.getField("vel_y"));
+            add(GameObject.class.getField("pos_x"));
+            add(GameObject.class.getField("pos_y"));
             add(GameObject.class.getField("rotation"));
         } catch (Exception e) {
             e.printStackTrace();
@@ -29,7 +35,8 @@ public class GameObject {
     }};
 
     public GameObject(World world, Vector2D position, String image_path) {
-        this.position = position;
+        this.pos_x = position.x;
+        this.pos_y = position.y;
 
         ImageIcon ii = new ImageIcon(image_path);
         image = ii.getImage();

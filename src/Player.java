@@ -16,19 +16,19 @@ public class Player extends GameObject {
             return;
 
         if (InputHandler.isActionPressed("move_left")) {
-            velocity.x += -speed;
+            vel_x += -speed;
         }
 
         if (InputHandler.isActionPressed("move_right")) {
-            velocity.x += speed;
+            vel_x += speed;
         }
 
         if (InputHandler.isActionPressed("move_up")) {
-            velocity.y += -speed;
+            vel_y += -speed;
         }
 
         if (InputHandler.isActionPressed("move_down")) {
-            velocity.y += speed;
+            vel_y += speed;
         }
         if(InputHandler.isActionPressed("shoot")) {
             // Shoot a projectile when cooldown is over
@@ -48,37 +48,37 @@ public class Player extends GameObject {
         shoot_cooldown -= 1;
 
         // Update position
-        position.x += velocity.x;
-        position.y += velocity.y;
+        pos_x += vel_x;
+        pos_y += vel_y;
 
         // Friction
-        velocity.x *= 0.9f;
-        velocity.y *= 0.9f;
+        vel_x *= 0.9f;
+        vel_y *= 0.9f;
 
         // Stop slowing down when velocity is too low
-        if (velocity.x < 0.01f && velocity.x > -0.01f) {
-            velocity.x = 0;
+        if (vel_x < 0.01f && vel_x > -0.01f) {
+            vel_x = 0;
         }
-        if (velocity.y < 0.01f && velocity.y > -0.01f) {
-            velocity.y = 0;
+        if (vel_y < 0.01f && vel_y > -0.01f) {
+            vel_y = 0;
         }
 
         // Make the player slide along the walls:
-        if (position.x < 0) {
-            position.x = 0;
-            velocity.x = 0;
+        if (pos_x < 0) {
+            pos_x = 0;
+            vel_x = 0;
         }
-        if (position.x > GameWindow.currentCanvas.W_WIDTH - image.getWidth(null)) {
-            position.x = GameWindow.currentCanvas.W_WIDTH - image.getWidth(null);
-            velocity.x = 0;
+        if (pos_x > GameWindow.currentCanvas.W_WIDTH - image.getWidth(null)) {
+            pos_x = GameWindow.currentCanvas.W_WIDTH - image.getWidth(null);
+            vel_x = 0;
         }
-        if (position.y < 0) {
-            position.y = 0;
-            velocity.y = 0;
+        if (pos_y < 0) {
+            pos_y = 0;
+            vel_y = 0;
         }
-        if (position.y > GameWindow.currentCanvas.W_HEIGHT - image.getHeight(null)) {
-            position.y = GameWindow.currentCanvas.W_HEIGHT - image.getHeight(null);
-            velocity.y = 0;
+        if (pos_y > GameWindow.currentCanvas.W_HEIGHT - image.getHeight(null)) {
+            pos_y = GameWindow.currentCanvas.W_HEIGHT - image.getHeight(null);
+            vel_y = 0;
         }
     }
 
@@ -86,12 +86,12 @@ public class Player extends GameObject {
         Player p = world.getPlayer();
 
         // spawn projectile with velocity from player to mouse:
-        double vel_x = direction.x - p.position.x;
-        double vel_y = direction.y - p.position.y;
+        double vel_x = direction.x - p.pos_x;
+        double vel_y = direction.y - p.pos_y;
         double mag = Math.sqrt(vel_x * vel_x + vel_y * vel_y);
         vel_x /= mag;
         vel_y /= mag;
-        new Projectile(world, p.position, "src/resources/projectile.png",  new Vector2D(vel_x, vel_y));
+        new Projectile(world, new Vector2D(p.pos_x, p.pos_y), "src/resources/projectile.png",  new Vector2D(vel_x, vel_y));
     }
 
 }
