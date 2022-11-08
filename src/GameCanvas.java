@@ -10,16 +10,7 @@ import java.awt.image.BufferedImage;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.awt.geom.AffineTransform;
-
-import javax.swing.ImageIcon;
-import javax.swing.JPanel;
 import javax.swing.Timer;
-
-import utils.Vector2D;
 
 public class GameCanvas extends Canvas implements ActionListener {
     private boolean inGame = true;

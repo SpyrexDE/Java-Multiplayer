@@ -45,6 +45,7 @@ public class World {
             gameObjects.remove(go);
         }
         gameObjectsToRemove.clear();
+        
         for (GameObject go : gameObjectsToAdd) {
             gameObjects.add(go);
         }

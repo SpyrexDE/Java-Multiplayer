@@ -43,10 +43,10 @@ public class Networking {
 
         public void run() {
             while (true) {
-                String msg = receive();
+                /*String msg = receive();
                 if (msg != null) {
                     // Process new data from server
-                }
+                }*/
             }
         }
 
