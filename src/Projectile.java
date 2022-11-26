@@ -32,7 +32,7 @@ public class Projectile extends GameObject {
         // Make the projectile collide with the walls and bounce off:
         if (pos_x < 0) {
             pos_x = 0;
-            vel_x *= -1;
+            vel_x *= - speed;
         }
         if (pos_x > GameWindow.currentCanvas.W_WIDTH - image.getWidth(null)) {
             pos_x = GameWindow.currentCanvas.W_WIDTH - image.getWidth(null);
@@ -40,11 +40,11 @@ public class Projectile extends GameObject {
         }
         if (pos_y < 0) {
             pos_y = 0;
-            vel_y *= -1;
+            vel_y *= - speed;
         }
         if (pos_y > GameWindow.currentCanvas.W_HEIGHT - image.getHeight(null)) {
             pos_y = GameWindow.currentCanvas.W_HEIGHT - image.getHeight(null);
-            vel_y *= -1;
+            vel_y *= - speed;
         }
     }
 }
