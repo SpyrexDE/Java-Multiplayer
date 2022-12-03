@@ -1,8 +1,10 @@
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -28,31 +30,34 @@ public class Networking {
 
     public static class Client implements Runnable{
         private Socket socket;
-        private DataInputStream in;
-        private DataOutputStream out;
+        private InputStream in;
+        private OutputStream out;
+        private ArrayList<String> received_messages = new ArrayList<String>();
+        protected Thread runningThread = null;
 
         public Client(String ip, int port) {
             try {
                 socket = new Socket(ip, port);
-                in = new DataInputStream(socket.getInputStream());
-                out = new DataOutputStream(socket.getOutputStream());
+                in = socket.getInputStream();
+                out = socket.getOutputStream();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
         public void run() {
-            while (true) {
-                /*String msg = receive();
-                if (msg != null) {
-                    // Process new data from server
-                }*/
+            synchronized(this){
+                this.runningThread = Thread.currentThread();
+            }
+            while(!Thread.interrupted()){
+                received_messages.add(receive());
             }
         }
 
-        public void send(String msg) {
+        public void send(String message) {
             try {
-                out.writeUTF(msg);
+                BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(out));
+                bw.write(message);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -60,11 +65,16 @@ public class Networking {
 
         public String receive() {
             try {
-                if (in.available() > 0)
-                    return in.readUTF();
+                return new BufferedReader(new InputStreamReader(in)).readLine();
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            return null;
+        }
+
+        public String pop_received() {
+            if(received_messages.size() > 0)
+                return received_messages.remove(0);
             return null;
         }
 
@@ -120,11 +130,12 @@ public class Networking {
                 ArrayList<String> messages = new ArrayList<String>();
                 for(int i = 0; i < sockets.size(); i++) {
                     InputStream in = sockets.get(i).getInputStream();
-                    DataInputStream dis = new DataInputStream(in);
-                    messages.add(dis.readUTF());
+                    BufferedReader br = new BufferedReader(new InputStreamReader(in));
+                    String data = br.readLine();
+                    messages.add(data);
 
                     // Forward data to other clients (Broadcast)
-                    send(dis.readUTF());
+                    send(data);
                 }
                 return messages;
             } catch (IOException e) {
@@ -133,14 +144,13 @@ public class Networking {
             return null;
         }
 
-        public void send(String msg) {
+        public void send(String message) {
             try {
                 for(int i = 0; i < sockets.size(); i++) {
                     OutputStream output = sockets.get(i).getOutputStream();
-                    DataOutputStream dataOutput = new DataOutputStream(output);
-                    dataOutput.writeUTF(msg);
-                    dataOutput.flush();
-                    dataOutput.close();
+                    BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(output));
+                    bw.write(message);
+                    bw.flush();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
